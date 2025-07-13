@@ -47,9 +47,27 @@ const ManageTasks = () => {
     navigate('/admin/create-task', { state: { taskId: taskData._id } });
   };
 
-  const handleDownloadReport = async()=>{
-  
+  const handleDownloadReport = async () => {
+    try {
+      const response = await axiosInstance.get(API_PATHS.REPORTS.EXPORT_TASKS, {
+        responseType: "blob",
+      });
+
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "task_details.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading expense details:", error);
+      toast.error("Failed to download expense details. Please try again.");
+    }
   };
+
 
   useEffect(()=>{
     getAllTasks(filterStatus);
@@ -94,7 +112,7 @@ const ManageTasks = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {allTasks?.map((item, index) => (
             <TaskCard
-              key={item_id}
+              key={item._id}
               title={item.title}
               description={item.description}
               priority={item.priority}

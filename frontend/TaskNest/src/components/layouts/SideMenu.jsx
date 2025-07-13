@@ -18,9 +18,11 @@ const SideMenu = ({ activeMenu }) => {
   const handleClick = (route) => {
     if (route === "logout") {
       handleLogout();
+      navigate("/login");
       return;
     }
     navigate(route);
+    
   };
 
   useEffect(() => {
